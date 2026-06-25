@@ -1,0 +1,356 @@
+﻿@model List<ContactManager.Models.Contact>
+
+@{
+    ViewData["Title"] = "Contacts";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Contact Manager</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cuprum:ital,wght@0,400..700;1,400..700&family=Mulish:ital,wght@0,200..1000;1,200..1000&family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Shantell+Sans:ital,wght@0,300..800;1,300..800&family=Zen+Kurenaido&family=Zen+Maru+Gothic&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/normalize.css">
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/responsive.css">
+</head>
+<body>
+
+    <div class="app">
+        <aside class="sidebar" aria-label="Main navigation menu">
+            <div class="logo" aria-label="Contact Manager logo">contact manager</div>
+        
+            <div class="menu-title">General</div>
+        
+            <div class="menu-item" tabindex="0" role="button" aria-label="Contacts, current section">
+                <div class="menu-item-icon">
+                    <img src="~/img/active.svg" alt="Active section icon">
+                    <img src="~/img/contacts.svg" alt="Contacts icon">
+                </div>
+                Contacts
+            </div>
+        </aside>
+
+        <main class="main" id="main-content">
+            <div class="topbar">
+                
+                <form method="get" asp-action="Index" class="search-wrap">
+    
+                    <div class="search-icon">
+                        <img src="~/img/search.svg" alt="Search icon">
+                    </div>
+
+                    <input class="search"
+                           type="text"
+                           name="searchString"
+                           value="@ViewBag.SearchString"
+                           placeholder="Search contacts..." />
+
+                </form>
+
+                <div class="actions">
+                    <div class="filter-dropdown">
+                        <input type="checkbox" id="filterToggle" class="filter-toggle">
+                        <label for="filterToggle" class="filter-btn-label">
+                            <img src="~/img/filter.svg" alt="Filter icon">
+                            Filter
+                        </label>
+                        <div class="filter-content">
+                            <div class="filter-section">
+                                <div class="filter-section-title">Sort by</div>
+                                <a href="@Url.Action("Index", new { sortOrder = "name", searchString = ViewBag.SearchString })"
+                                       class="filter-option">
+                                    Name (A-Z)
+                                </a>
+
+                                <a href="@Url.Action("Index", new { sortOrder = "birth", searchString = ViewBag.SearchString })"
+                                       class="filter-option">
+                                    Date of Birth
+                                </a>
+                            </div>
+                        </div>
+                        <label for="filterToggle" class="filter-overlay"></label>
+                    </div>
+
+                    <button class="btn btn-add" type="button" popovertarget="addContactPopover">
+                        <img src="~/img/add-contact.svg" alt="Add contact icon">
+                        Add Contact
+                    </button>
+
+                    <div popover id="addContactPopover" class="add-contact-popover">
+    
+                        <div class="popover-header">
+                            <h2 class="create-title">Create contact</h2>
+                            <h2 class="edit-title">Edit contact</h2>
+                        </div>
+
+                        <form class="contact-form" id="contactForm" asp-controller="Contacts" asp-action="Create" method="post" enctype="multipart/form-data">
+
+                            <input type="hidden" name="Id" id="contactId">
+
+                            <label class="upload-avatar">
+
+                                <input type="file"
+                                       name="ImageFile"
+                                       id="imageInput"
+                                       accept="image/*"
+                                       hidden>
+
+                                <div class="upload-circle" id="avatarPreview">
+                                    +
+                                </div>
+
+                                <span>Upload photo</span>
+
+                            </label>
+
+                            <input type="text" name="Name" id="name" placeholder="Full name">
+                            <small class="error"></small>
+
+                            <input type="text" name="JobTitle" id="jobTitle" placeholder="Job title">
+                            <small class="error"></small>
+
+                            <input type="tel" name="MobilePhone" id="phone" placeholder="Phone number">
+                            <small class="error"></small>
+
+                            <input type="date" name="BirthDate" id="birthDate">
+                            <small class="error"></small>
+
+                            <div class="popover-actions">
+                                <button class="btn-cancel"
+                                        type="button"
+                                        popovertarget="addContactPopover"
+                                        popovertargetaction="hide">
+                                    Cancel
+                                </button>
+
+                                <button type="submit" class="btn-save">
+                                    Save
+                                </button>
+                            </div>
+
+                        </form>
+
+                    </div>
+
+                    <div class="logo" aria-label="Contact Manager logo">contact manager</div>
+
+                    <div class="more-wrapper">
+
+                        <input type="checkbox" id="moreToggle" class="more-toggle">
+
+                        <label for="moreToggle" class="btn-more">
+                            <img src="~/img/more-horizontal.svg" alt="More options menu">
+                        </label>
+
+                        <div class="more-content">
+
+                            <div class="more-section">
+
+                                <div class="more-section-title">
+                                    Actions
+                                </div>
+
+                                <label for="editMode" class="more-option">
+                                    Edit contacts
+                                </label>
+
+                            </div>
+
+                        </div>
+
+                        <label for="moreToggle" class="more-overlay"></label>
+
+                    </div>
+                </div>
+            </div>
+
+            <input type="checkbox" id="editMode" class="edit-toggle">
+
+            <div class="contacts-header">
+                <h1>Contacts</h1>
+
+                <button class="btn btn-delete-selected"
+                        type="button"
+                        popovertarget="deletePopover">
+                    <img src="~/img/delete.svg" alt="Delete">
+
+                    Delete
+                </button>
+            </div>
+
+            <div class="table-head" role="rowheader" aria-label="Contact list columns">
+                <div class="table-check-space"></div>
+
+                <div>Basic info</div>
+                <div>Job title</div>
+                <div>Mobile phone</div>
+                <div>Date of birth</div>
+                <div></div>
+            </div>
+
+            @foreach (var contact in Model)
+            {
+                <div class="contact-row contact-clickable" role="row" aria-label="Contact: @contact.Name">
+
+                    <label class="row-check">
+                        <input type="checkbox"
+                               class="contact-checkbox"
+                               value="@contact.Id">
+                        <span></span>
+                    </label>
+
+                    <div class="contact-info">
+
+                        <div class="avatar">
+
+                            @if (!string.IsNullOrEmpty(contact.ImagePath))
+                            {
+                                <img src="@contact.ImagePath" alt="@contact.Name avatar">
+                            }
+                            else
+                            {
+                                <img src="~/img/default-avatar.jpg" alt="Default avatar">
+                            }
+
+                        </div>
+
+                        <div class="contact-texts">
+
+                            <div class="text contact-name">
+                                @contact.Name
+                            </div>
+
+                            <div class="contact-job mobile-job">
+                                @contact.JobTitle
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="text desktop-job">
+                        @contact.JobTitle
+                    </div>
+
+                    <div class="text">
+                        @contact.MobilePhone
+                    </div>
+
+                    <div class="text">
+                        @contact.BirthDate.ToString("dd-MMM-yyyy")
+                    </div>
+
+                    <div class="row-actions">
+
+                        <input type="checkbox"
+                               id="rowMenu@(contact.Id)"
+                               class="row-menu-toggle">
+
+                        <label for="rowMenu@(contact.Id)" class="dots-row">
+                            <img src="~/img/more-contact.svg" alt="Contact menu">
+                        </label>
+
+                        <div class="row-menu">
+
+                            <div class="row-menu-section">
+
+                                <div class="row-menu-title">
+                                    Actions
+                                </div>
+
+                                <button class="row-menu-option edit-contact-btn"
+                                        type="button"
+                                        popovertarget="addContactPopover"
+                                        data-id="@contact.Id"
+                                        data-name="@contact.Name"
+                                        data-job="@contact.JobTitle"
+                                        data-phone="@contact.MobilePhone"
+                                        data-birth="@contact.BirthDate.ToString("yyyy-MM-dd")"
+                                        data-image="@contact.ImagePath">
+                                    Edit contact
+                                </button>
+
+                                <button class="row-menu-option delete-contact-btn"
+                                        type="button"
+                                        popovertarget="deletePopover"
+                                        data-id="@contact.Id">
+                                    Delete contact
+                                </button>
+
+                            </div>
+
+                        </div>
+
+                        <label for="rowMenu@(contact.Id)"
+                               class="row-menu-overlay">
+                        </label>
+
+                    </div>
+
+                </div>
+            }
+
+          
+        </main>
+    </div>
+
+    <div class="mobile-bottom-nav">
+        <div class="mobile-nav-contacts">
+            <img src="~/img/contacts.svg" alt="Contacts">
+            <span>Contacts</span>
+        </div>
+
+        <div class="mobile-nav-search">
+            <img src="~/img/search.svg" alt="Search">
+        </div>
+    </div>
+
+
+    <div popover id="deletePopover" class="delete-popover">
+
+        <h3 class="delete-title">
+            Delete contact
+        </h3>
+
+        <p class="delete-text">
+            Are you sure you want to delete this contact?
+        </p>
+
+        <div class="delete-actions">
+
+            <button type="button"
+                    class="btn-delete-cancel"
+                    popovertarget="deletePopover"
+                    popovertargetaction="hide">
+                Cancel
+            </button>
+
+            <form id="deleteForm"
+                  asp-controller="Contacts"
+                  asp-action="DeleteSelected"
+                  method="post">
+
+                <div id="deleteIdsContainer"></div>
+
+                <button type="submit"
+                        class="btn-delete-confirm">
+                    Delete
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+    <script type="module" src="~/js/contact-validation.js"></script>
+    <script type="module" src="~/js/contact-edit.js"></script>
+    <script src="~/js/contact-delete.js"></script>
+
+</body>
+</html>
